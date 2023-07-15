@@ -3,6 +3,7 @@ package com.astrotalk.HospitalStaffManagement.config.filter;
 import com.astrotalk.HospitalStaffManagement.entity.Staff;
 import com.astrotalk.HospitalStaffManagement.service.UserDetailsServiceImpl;
 import com.astrotalk.HospitalStaffManagement.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,10 +38,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Staff staff = (Staff) this.userDetailsService.loadUserByUsername(username);
+
             if (jwtutil.validateToken(jwt, staff.getStaffEmail())) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null);
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(username, null,
+                        staff.getAuthorities());
+                userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(userToken);
             }
         }
         filterChain.doFilter(request, response);
