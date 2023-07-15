@@ -5,6 +5,7 @@ import com.astrotalk.HospitalStaffManagement.dto.AuthenticationRequest;
 import com.astrotalk.HospitalStaffManagement.dto.AuthenticationResponse;
 import com.astrotalk.HospitalStaffManagement.dto.RegisterRequestBody;
 import com.astrotalk.HospitalStaffManagement.entity.Staff;
+import com.astrotalk.HospitalStaffManagement.exception.StaffNotExistsException;
 import com.astrotalk.HospitalStaffManagement.repository.StaffRepository;
 import com.astrotalk.HospitalStaffManagement.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,10 @@ public class LoginService {
         // Check if the staff exists and compare the passwords
         if (staffOptional.isPresent() && passwordEncoder.matches(password, staffOptional.get().getStaffPassword())) {
             Staff staff = staffOptional.get();
-            System.out.println(passwordEncoder.matches(password , staff.getStaffPassword()));
                 final String jwt = jwtUtil.generateToken(authenticationRequest.getEmail(), new LinkedList<String>());
-                System.out.println("jwtToken: "+ jwt);
                 return new AuthenticationResponse(jwt);
         }
-        return null;
+        throw new StaffNotExistsException("Staff does Not Exists");
     }
 
     public Staff createStaff(RegisterRequestBody registerRequestBody) {
