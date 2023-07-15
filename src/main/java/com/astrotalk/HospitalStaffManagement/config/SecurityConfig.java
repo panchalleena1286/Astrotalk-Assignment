@@ -1,13 +1,16 @@
 package com.astrotalk.HospitalStaffManagement.config;
 
 import com.astrotalk.HospitalStaffManagement.config.filter.SecurityFilter;
+import com.astrotalk.HospitalStaffManagement.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,11 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final SecurityFilter securityFilter;
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, SecurityFilter securityFilter){
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, SecurityFilter securityFilter){
 
         this.userDetailsService = userDetailsService;
         this.securityFilter = securityFilter;
@@ -45,14 +48,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().and()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll() // Allowing login and signup endpoint without authentication
-                .antMatchers("/home/**", "/h2-console", "/h2-console/**", "/authenticate", "/",
-                            "/static/**", "/manifest.json", "/favicon.ico")
-                .permitAll()
-                .anyRequest().authenticated().and().sessionManagement()// Require authentication for all other endpoints
+                .antMatchers("/api/auth/**", "/api/hospital/**", "/api/expense/**").permitAll() // Allowing login and signup endpoint without authentication
+                .antMatchers("/home/**", "/h2-console", "/h2-console/**", "/login",
+                            "/static/**", "/manifest.json", "/favicon.ico").permitAll()
+                .and().sessionManagement()// Require authentication for all other endpoints
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
-        http.headers().frameOptions().disable();
+        http.headers().frameOptions().sameOrigin();
         return http.build();
     }
 

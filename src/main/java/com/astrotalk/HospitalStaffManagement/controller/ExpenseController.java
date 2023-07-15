@@ -14,14 +14,14 @@ public class ExpenseController {
 
 	@GetMapping("/getTotalAmountPending")
 	public ResponseEntity<Object> getTotalAmountPending(@RequestHeader("Authorization") String auth,
-			@RequestParam String name) {
-		return ResponseEntity.ok(expenseService.getTotalAmountPending(name));
+			@RequestParam String email) {
+		return ResponseEntity.ok(expenseService.getTotalAmountPending(email));
 	}
 
 	@GetMapping("/getAllBill")
-	public ResponseEntity<Object> getBillsOfPatient(@RequestHeader("Authorization") String auth, @RequestParam String name) {
+	public ResponseEntity<Object> getBillsOfPatient(@RequestHeader("Authorization") String auth, @RequestParam String email) {
 
-		return ResponseEntity.ok(expenseService.getAllBills(name));
+		return ResponseEntity.ok(expenseService.getAllBills(email));
 	}
 
 }

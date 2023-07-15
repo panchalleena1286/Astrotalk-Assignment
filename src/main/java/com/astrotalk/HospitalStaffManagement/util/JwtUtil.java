@@ -21,9 +21,11 @@ public class JwtUtil {
 
     public String generateToken(String username, List<String> roles) {
 
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put("roles", roles);
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
-        Key signingKey = generateKey();
+        Key signingKey = generateSecretKey();
 
         return "Bearer " + Jwts.builder()
                 .setSubject(username)
@@ -38,12 +40,8 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    private static Key generateKey() {
-        return generateSecretKey();
-    }
-
     private Claims parseToken(String token) {
-        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(generateKey()).build();
+        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(generateSecretKey()).build();
         try {
             return jwtParser.parseClaimsJws(token).getBody();
         } catch (JwtException e) {
