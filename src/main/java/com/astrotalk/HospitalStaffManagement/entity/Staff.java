@@ -5,24 +5,27 @@ import javax.validation.constraints.*;
 import javax.validation.constraints.NotEmpty;
 
 import com.astrotalk.HospitalStaffManagement.constant.enums.Designation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Data
 @Table(name = "staff")
+@Data
 public class Staff implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "staff_id")
     private Integer id;
 
     @Column(name = "staff_name")
     @NotEmpty(message="Name cannot be empty")
-    @Size(min = 3, message = "Name should have at least 3 characters")
     private String staffName;
 
     @Column(name = "staff_email",unique = true)
