@@ -19,23 +19,23 @@ public class ExpenseService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public int getTotalAmountPending(String name) {
-        Optional<Patient> patientOptional = patientRepository.findByName(name);
+    public int getTotalAmountPending(String email) {
+        Optional<Patient> patientOptional = patientRepository.findByPatientEmail(email);
         if (patientOptional.isPresent()) {
             Patient patient = patientOptional.get();
-            List<Expense> expenses = patient.getExpenses();
+            List<Expense> expenses = patient.getPatientExpenses();
             int totalExpenseAmount = expenses.stream().mapToInt(Expense::getItem_Price).sum();
-            return totalExpenseAmount - patient.getTotalAmountPaid();
+            return totalExpenseAmount - patient.getPatientTotalAmountPaid();
         } else {
             throw new PatientNotExistsException("Patient Not Exists");
         }
     }
 
-    public Map<String, Integer> getAllBills(String name) {
-        Optional<Patient> patientOptional = patientRepository.findByName(name);
+    public Map<String, Integer> getAllBills(String email) {
+        Optional<Patient> patientOptional = patientRepository.findByPatientEmail(email);
         if (patientOptional.isPresent()) {
             Patient patient = patientOptional.get();
-            List<Expense> expenses = patient.getExpenses();
+            List<Expense> expenses = patient.getPatientExpenses();
             Map<String, Integer> bills = new HashMap<>();
             for (Expense expense : expenses) {
                 bills.put(expense.getItem_Name(), expense.getItem_Price());
