@@ -1,8 +1,10 @@
 package com.astrotalk.HospitalStaffManagement.service;
 
 import com.astrotalk.HospitalStaffManagement.constant.enums.PatientStatus;
+import com.astrotalk.HospitalStaffManagement.dto.PatientRequestBody;
 import com.astrotalk.HospitalStaffManagement.entity.Patient;
 import com.astrotalk.HospitalStaffManagement.exception.PatientAlreadyExistsException;
+import com.astrotalk.HospitalStaffManagement.exception.PatientNotExistsException;
 import com.astrotalk.HospitalStaffManagement.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,92 +29,104 @@ public class HospitalServiceImpl implements HospitalService{
     @Override
     public List<HashMap<String, Object>> getAllAdmittedPatients() {
 
-        List<Patient> admittedPatientsList = patientRepository.findAllByStatus(String.valueOf(ADMITTED));
-        List<HashMap<String, Object>> patientMap = new LinkedList<>();
-        for (Patient patient : admittedPatientsList) {
-            HashMap<String, Object> res = new HashMap<String, Object>();
-            res.put("name", patient.getName());
-            res.put("age", patient.getAge());
-            res.put("room", patient.getRoom());
-            res.put("doctor", patient.getDoctorName());
-            res.put("mobile", patient.getMobile());
-            res.put("admit date", patient.getAdmitDate());
-            res.put("status ", patient.getStatus());
-            patientMap.add(res);
+        List<Patient> admittedPatientsList = patientRepository.findAllByPatientStatus(PatientStatus.ADMITTED);
+        if(admittedPatientsList.size() !=0){
+            List<HashMap<String, Object>> patientMapList = new LinkedList<>();
+            for (Patient patient : admittedPatientsList) {
+                HashMap<String, Object> result = new HashMap<String, Object>();
+                result.put("name", patient.getPatientName());
+                result.put("email", patient.getPatientEmail());
+                result.put("age", patient.getPatientAge());
+                result.put("room", patient.getPatientRoom());
+                result.put("doctor", patient.getDoctorName());
+                result.put("mobile", patient.getPatientMobile());
+                result.put("admitDate", patient.getPatientAdmitDate());
+                result.put("status ", patient.getPatientStatus());
+                patientMapList.add(result);
+
+            }
+            return patientMapList;
         }
-        return patientMap;
+        throw new PatientNotExistsException("No Patient exists");
     }
 
     @Override
-    public HashMap<String, Object> getPatient(String name) {
-        HashMap<String, Object> res = null;
-        Optional<Patient> optionalPatient = patientRepository.findByName(name);
+    public HashMap<String, Object> getPatientByEmail(String email) {
+
+        Optional<Patient> optionalPatient = patientRepository.findByPatientEmail(email);
         if (optionalPatient.isPresent()) {
-            res = new HashMap<>();
+            HashMap<String, Object> result = new HashMap<>();
             Patient patient = optionalPatient.get();
-            res.put("id", patient.getId());
-            res.put("name", patient.getName());
-            res.put("age", patient.getAge());
-            if (patient.getExpenses() != null && !patient.getExpenses().isEmpty())
-                res.put("expenses", patient.getExpenses());
-            res.put("mobile", patient.getMobile());
-            res.put("Status", patient.getStatus());
-            return res;
+            result.put("id", patient.getId());
+            result.put("name", patient.getPatientName());
+            result.put("email", patient.getPatientEmail());
+            result.put("age", patient.getPatientAge());
+            result.put("room", patient.getPatientRoom());
+            result.put("mobile", patient.getPatientMobile());
+            result.put("Status", patient.getPatientStatus());
+            result.put("doctor", patient.getDoctorName());
+            result.put("admitDate", patient.getPatientAdmitDate());
+            return result;
         }
-        return res;
+        throw new PatientNotExistsException("Patient does not exist");
     }
 
     @Override
-    public Patient admitPatient(Patient patient) throws PatientAlreadyExistsException {
-        Optional<Patient> optionalPatient = patientRepository.findByName(patient.getName());
-        if (optionalPatient.isPresent()) {
-            throw new PatientAlreadyExistsException("Patient Already Exists");
+    public Patient admitPatient(PatientRequestBody patient) throws PatientAlreadyExistsException {
+        Optional<Patient> optionalPatient = patientRepository.findByPatientEmail(patient.getPatientEmail());
+        if (optionalPatient.isEmpty()) {
+            Patient patientMock = new Patient();
+            patientMock.setPatientName(patient.getPatientName());
+            patientMock.setPatientEmail(patient.getPatientEmail());
+            patientMock.setPatientAge(patient.getPatientAge());
+            patientMock.setPatientRoom(patient.getPatientRoom());
+            patientMock.setDoctorName(patient.getDoctorName());
+            patientMock.setPatientMobile(patient.getPatientMobile());
+            patientMock.setPatientAdmitDate(patient.getPatientAdmitDate());
+            patientMock.setPatientStatus(ADMITTED);
+            patientMock.setPatientExpensesSettled(false);
+            return patientRepository.save(patientMock);
         }
-        Patient patient1 = new Patient();
-        patient1.setStatus(ADMITTED);
-        patient1.setExpensesSettled(false);
-        return patientRepository.save(patient);
+        throw new PatientAlreadyExistsException("Patient Already Exists");
     }
 
     @Override
-    public String dischargePatient(String name) {
-        Optional<Patient> optionalPatient = patientRepository.findByName(name);
-        if (optionalPatient.isPresent() && optionalPatient.get().isExpensesSettled()) {
+    public String dischargePatient(String email) {
+        Optional<Patient> optionalPatient = patientRepository.findByPatientEmail(email);
+        if (optionalPatient.isPresent() && optionalPatient.get().isPatientExpensesSettled()) {
             Patient patient = optionalPatient.get();
-            int total = expenseService.getTotalAmountPending(patient.getName());
+            int total = expenseService.getTotalAmountPending(patient.getPatientEmail());
             if (total > 0) {
-                return "Patient cannot be discharged, Amount remaining: " + total;
+                return "Patient cannot be discharged, Pending Amount: " + total;
             } else {
-                patient.setStatus(PatientStatus.DISCHARGED);
-                patient.setExpensesSettled(true);
+                patient.setPatientStatus(PatientStatus.DISCHARGED);
+                patient.setPatientExpensesSettled(true);
                 patientRepository.save(patient);
                 return "Patient discharged successfully";
             }
         }
-        return "Patient does not Exists";
+        throw new PatientNotExistsException("Patient does not exist");
     }
 
     public String updatePatient(Patient patient) {
-        Optional<Patient> optionalPatient = patientRepository.findByName(patient.getName());
+        Optional<Patient> optionalPatient = patientRepository.findByPatientEmail(patient.getPatientEmail());
         if(optionalPatient.isPresent()){
             Patient existing = optionalPatient.get();
-            if(existing.getAge() != null){
-                existing.setAge(patient.getAge());
+            if(existing.getPatientAge() != null){
+                existing.setPatientAge(patient.getPatientAge());
             }
-            if(patient.getName() != null){
-                existing.setName(patient.getName());
+            if(patient.getPatientRoom() != null){
+                existing.setPatientRoom(patient.getPatientRoom());
             }
-            if(patient.getRoom() != null){
-                existing.setRoom(patient.getRoom());
-            }
-            if(patient.getMobile() != null){
-                existing.setMobile(patient.getMobile());
+            if(patient.getPatientMobile() != null){
+                existing.setPatientMobile(patient.getPatientMobile());
             }
             if(patient.getDoctorName() != null){
                 existing.setDoctorName(patient.getDoctorName());
             }
             patientRepository.save(existing);
+            return "Patient details Successfully updated";
         }
-        return "Patient details Successfully updated";
+        throw new PatientNotExistsException("Patient does not exist");
     }
 }
