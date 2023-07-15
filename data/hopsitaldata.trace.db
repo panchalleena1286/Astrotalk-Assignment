@@ -1,6 +1,0 @@
-2023-07-14 15:33:43 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'DOCTOR' (STAFF: ""STAFF_DESIGNATION"" INTEGER)"; SQL statement:
-insert into staff (staff_designation, staff_email, staff_name, staff_password, id) values (?, ?, ?, ?, ?) [22018-214]
-2023-07-14 15:34:22 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'DOCTOR' (STAFF: ""STAFF_DESIGNATION"" INTEGER)"; SQL statement:
-insert into staff (staff_designation, staff_email, staff_name, staff_password, id) values (?, ?, ?, ?, ?) [22018-214]
