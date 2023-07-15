@@ -44,7 +44,6 @@ public class LoginController {
         try {
             String email = authenticationRequest.getEmail();
             String password = authenticationRequest.getPassword();
-            Designation designation = authenticationRequest.getDesignation();
             // Generate JWT token
             AuthenticationResponse authenticationResponse = loginService.createAuthenticationToken(authenticationRequest);
             // Return the token in the response
