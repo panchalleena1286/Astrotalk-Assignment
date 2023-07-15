@@ -1,0 +1,324 @@
+{
+	"info": {
+		"_postman_id": "70392e7d-d06a-4277-8e61-21f170df84a9",
+		"name": "HospitalManagement APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Leena Panchal\",\n  \"email\": \"leenapanchal@example.com\",\n  \"password\": \"Leena@123\",\n  \"designation\": \"DOCTOR\",\n  \"department\": \"General Physician\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"ashutoshviramgama@example.com\",\n    \"password\": \"Ashu@123\",\n    \"designation\": \"NURSE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AdmitPatient",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"currentDate\", new Date().toISOString().split(\"T\")[0]);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxODk2NywiZXhwIjoxNjg5NDIyNTY3fQ.vnOLgo4ozi2Omj4elvJTWlvAYwXYdYpsXxioL6jjRP0",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientName\":\"Akshat Sen\",\n    \"patientEmail\":\"akshatsen@gmail.com\",\n\t\"patientAge\":35,\n    \"patientRoom\":\"103\",\n    \"doctorName\":\"Dr. A. Raghav\",\n\t\"patientMobile\":\"9876543345\",\n\t\"patientAdmitDate\":\"{{currentDate}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/hospital/admit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"hospital",
+						"admit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AllPatient",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxODk2NywiZXhwIjoxNjg5NDIyNTY3fQ.vnOLgo4ozi2Omj4elvJTWlvAYwXYdYpsXxioL6jjRP0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/hospital/patients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"hospital",
+						"patients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxOTI1OCwiZXhwIjoxNjg5NDIyODU4fQ.JFPxrjnWhrU_5qnHqxXhn9k0XLcYjBLufyxxT6VHCLc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/hospital/patient/akshatsen%40gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"hospital",
+						"patient",
+						"akshatsen%40gmail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdatePatientDetails",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxOTI1OCwiZXhwIjoxNjg5NDIyODU4fQ.JFPxrjnWhrU_5qnHqxXhn9k0XLcYjBLufyxxT6VHCLc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patientEmail\":\"akshatsen@gmail.com\",\n\t\"patientAge\":35,\n    \"patientRoom\":\"104\",\n    \"patientMobile\":\"9876543345\",\n    \"doctorName\":\"Dr. A. Raghav\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/hospital/update/patient",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"hospital",
+						"update",
+						"patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BillOfPatient",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxOTI1OCwiZXhwIjoxNjg5NDIyODU4fQ.JFPxrjnWhrU_5qnHqxXhn9k0XLcYjBLufyxxT6VHCLc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/api/expense/getAllBill?email=pushpatrivedi@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"expense",
+						"getAllBill"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "pushpatrivedi@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TotalAmountPending",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2h1dG9zaHZpcmFtZ2FtYUBleGFtcGxlLmNvbSIsImlhdCI6MTY4OTQxOTI1OCwiZXhwIjoxNjg5NDIyODU4fQ.JFPxrjnWhrU_5qnHqxXhn9k0XLcYjBLufyxxT6VHCLc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/expense/getTotalAmountPending?email=pushpatrivedi@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"expense",
+						"getTotalAmountPending"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "pushpatrivedi@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DischargePatient",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/hospital/discharge/patient/{name}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"hospital",
+						"discharge",
+						"patient",
+						"{name}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
