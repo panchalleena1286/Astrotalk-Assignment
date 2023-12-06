@@ -1,5 +1,7 @@
 # Hospital Management System
 
+Developed a comprehensive Hospital Management System to streamline and improve healthcare operations. Successfully streamlined staff operations, billing processes, and enhanced security via JWT authentication.
+
 This project is developed using Java (11), Spring Boot (2.7.13), Spring Data JPA, H2-DB, Spring Security, JWT token for authentication and Lombok for simplified Java code generation. It provides an API for managing hospital staff, patients, expenses, and billing.
 
 <h3>Getting Started</h3>
